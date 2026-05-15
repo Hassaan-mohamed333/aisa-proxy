@@ -104,6 +104,21 @@ app.post('/v1/chat', async (req,res) => {
     }
 });
 
+// ── TEMP: Create first license without auth (remove after use) ───────────────
+app.get('/setup', (req,res) => {
+    const raw = `setup:siihab.com:${Date.now()}:${Math.random()}`;
+    const key = 'AISA-' + createHash('sha256').update(raw).digest('hex').toUpperCase().slice(0,24);
+    const lic = {
+        key, plan:'lifetime', status:'active',
+        site_url:'https://siihab.com',
+        customer_email:'hassaanmohamed333@gmail.com',
+        created_at: new Date().toISOString(),
+        expires_at: null, usage:{}
+    };
+    saveL(key, lic);
+    return res.json({ license_key: key, plan:'lifetime', status:'active' });
+});
+
 // ── Admin: create license ─────────────────────────────────────────────────────
 app.post('/admin/license/create', (req,res) => {
     if (req.headers['x-admin-key']!==ADMIN_KEY) return res.status(401).json({error:'Unauthorized'});
