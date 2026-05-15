@@ -49,6 +49,7 @@ function trackUsage(lic) {
 const app = express();
 app.use(express.json({ limit:'50kb' }));
 app.use(cors());
+app.set('trust proxy', 1);
 app.use(rateLimit({ windowMs:60000, max:120, message:{error:'Too many requests'} }));
 
 // Health
