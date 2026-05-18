@@ -37,12 +37,12 @@ loadFromEnv();
 // Also add any hardcoded license from ENV
 const STATIC_LICENSE = process.env.STATIC_LICENSE_KEY || '';
 const STATIC_SITE    = process.env.STATIC_SITE_URL    || '';
-if ( STATIC_LICENSE && STATIC_SITE ) {
+if ( STATIC_LICENSE ) {
     memDB.licenses[ STATIC_LICENSE ] = {
         key:            STATIC_LICENSE,
         plan:           'lifetime',
         status:         'active',
-        site_url:       STATIC_SITE,
+        site_url:       'any',
         customer_email: process.env.STATIC_EMAIL || '',
         created_at:     new Date().toISOString(),
         expires_at:     null,
@@ -96,6 +96,7 @@ app.post('/v1/chat', async (req,res) => {
     const lic = getL(license_key);
     if (!lic) return res.status(401).json({error:'Invalid license key', code:'INVALID_LICENSE'});
     if (lic.status!=='active') return res.status(403).json({error:`License ${lic.status}`, code:'LICENSE_INACTIVE'});
+    // No site_url check — license works on any domain
 
     const usage = checkUsage(lic);
     if (!usage.ok) return res.status(429).json({error:usage.reason, code:'LIMIT_REACHED'});
